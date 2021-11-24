@@ -1,29 +1,35 @@
 import { Fragment, useState } from 'react';
+import useSWR from 'swr';
 import AxiosInstance from '../core/axios/instanceMethods';
 
 const AxiosComponent = () => {
-    const [photos, setphotos] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const fetcher = (url: string) => AxiosInstance.get(url);
 
-    const getphotos = async () => {
-        setLoading(true);
-        const response = await AxiosInstance.get('/photos');
-        console.log(response);
-        setLoading(false);
-        setphotos(response);
+    const { data } = useSWR('/photos', fetcher);
+
+    console.log(data, 'data');
+
+    const obj = {
+        title: 'hi',
+        url: 'again',
+        thumbnailUrl: 'haa',
     };
 
-    console.log(photos, 'photos');
+    const postphotos = async () => {
+        const res = await AxiosInstance.post(`/photos`, obj);
+        console.log('posted', res);
+    };
+
     return (
         <Fragment>
-            <button onClick={getphotos}>See photos</button>
-            {loading && <p>Loading...</p>}
+            {/* <button onClick={getphotos}>See photos</button> */}
+            <button onClick={postphotos}>Post photos</button>
 
-            {photos?.map((photo) => (
+            {/* {data?.map((photo: any) => (
                 <ul key={photo.id}>
                     <li>{photo.url}</li>
                 </ul>
-            ))}
+            ))} */}
         </Fragment>
     );
 };
